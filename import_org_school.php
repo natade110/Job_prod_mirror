@@ -1,0 +1,546 @@
+<?php
+
+	include "db_connect.php";
+	include "session_handler.php";
+	
+?>
+
+
+<?php include "header_html.php";?>
+                <td valign="top" style="padding-left:5px;">
+                	
+                    <h2 class="default_h1" style="margin:0; padding:0 0 10px 0;"  >การนำเข้าข้อมูลโรงเรียนเอกชน (โรงเรียนเอกชน) </h2>
+                    
+                    
+                     <div align="left" style="padding: 10px 0;">
+                      
+                            <a href="import_org_full_log.php" target="_blank" style="font-weight: bold;">>> ดู log การทำงานทั้งหมด คลิกที่นี่ <<</a>
+                      </div>
+                   
+                   
+
+                    <strong>1. อัพโหลดไฟล์ <font color="#CC6600">.xlsx</font> ที่เตรียมไว้เข้าระบบ ไฟล์ต้องมีขนาดน้อยกว่า <font color="#CC6600">25mb</font></strong>
+                   
+
+                    <bR />ตัวอย่างไฟล์นำเข้า <a href="test_school_small.xlsx">คลิกที่นี่</a>
+                    <br />
+                 
+                    
+                  
+                    <form method="post" action="upload_school_file.php" enctype="multipart/form-data" style="padding: 10px;">
+                    <table>
+                    	<tr>
+                        	<td>
+                            
+                            
+                            <div style="padding: 0 0 10px 0">
+                            <input  name="input_file" type="file" />
+                            </div>
+                            
+                            
+                              
+                            
+                            <?php if($_GET["xlsx"]){ ?>
+								
+                                <font color="red">
+                                error: ไฟล์ที่ upload ไม่ใช่ file .xlsx
+                                </font>
+                                <br />
+                                
+							<?php }?>
+                            
+                            <?php if($_GET["filesize"]){ ?>
+								
+                                <font color="red">
+                                error: ไฟล์ที่ upload มีขนาดเกิน 25mb
+                                </font>
+                                <br />
+                                
+							<?php }?>
+                            
+                            
+                             <?php if($_GET["moveupload"]){ ?>
+								
+                                <font color="red">
+                                error: Move-upload ไฟล์ไม่ได้
+                                </font>
+                                <br />
+                                
+							<?php }?>
+                            
+                              <?php if($_GET["ok"]){ ?>
+								
+                                <font color="green">
+                                อัพโหลดไฟล์เรียบร้อยแล้ว
+                                </font>
+                                <br />
+                                
+							<?php }?>
+                            
+                             
+                          
+                            
+                             <span id="step_1">
+                                 
+                             </span>
+                             <script>
+                             $( "#step_1" ).load( "ajax_upload_school_file.php?step=1" );
+                             </script>                          
+                            
+                           
+                            
+                            
+                          </td>
+                        </tr>
+                    	<tr>
+                    	  <td>
+                    	    
+                   	      </td>
+                  	  </tr>
+                   </table>
+                  
+                    </form>
+                    
+                    <hr />
+                    
+                    
+                    
+                   
+                    
+                    <?php
+					
+						$upload_folder = "./to_import_school/";
+	
+						$files = glob($upload_folder . '*.xlsx');
+					
+						foreach ($files as $filename) {
+							$import_filename = $filename;	
+							
+							?>
+                            
+                             <strong>2. มีการ upload file โรงเรียนขึ้นไปแล้ว - ถ้าต้องการเปลี่ยนไฟล์โรงเรียน ให้ลบไฟล์นี้ และ upload file ในข้อ (1) อีกครั้ง</strong>
+                            
+                            <div style="padding: 10px;">
+                            
+                                
+                        
+                                <div style="padding: 10px 0;">
+                                ไฟล์ที่ upload ณ ตอนนี้:
+                                
+                                <a href="<?php echo $import_filename;?>" target="_blank" download><?php echo str_replace($upload_folder,"",$import_filename);?></a>
+                                
+                               
+                                
+                                 <span id="delete_icon">
+                                 
+                                 </span>
+									 <script>
+                                     $( "#delete_icon" ).load( "ajax_upload_school_file.php?step=del" );
+                                     </script>
+                                    
+                                  </div>
+                                 
+                                 คลิกที่นี่ เพื่อทำการตรวจสอบไฟล์ เพื่อเตรียมการนำเข้าข้อมูล
+                                 
+                                 
+                                 <div id="ajax_upload_org_file">
+                                 
+                                 </div>
+                                 <script>
+								 $( "#ajax_upload_org_file" ).load( "ajax_upload_school_file.php?step=2" );
+								 </script>
+                                 
+                                
+                              
+                              
+                    </div>
+                             
+                     <hr />         
+                             
+                        <?php
+						}					
+					
+					?>
+                    
+                   
+                    
+                    
+                    
+                    <?php 
+					
+					$temp_count = getFirstItem("select count(*) from company_temp_school");
+					
+					if($temp_count){
+						
+						
+						
+							//find invalid details
+							$sql = "
+							
+								select
+									count(*)
+								from
+									company_temp_school
+								where
+									is_error = 1
+									
+							
+							
+							";
+							
+							
+							 $error_rows = getFirstItem($sql);
+						
+						
+					?>
+                   
+                   
+                   <strong>3. ตรวจสอบไฟล์เสร็จสิ้น - ถ้าต้องการเปลี่ยนไฟล์โรงเรียน ให้ลบไฟล์นี้ และ upload file ในข้อ (1) อีกครั้ง</strong>
+                   
+                   	<table cellpadding="5" bgcolor="#FFFFFF" border="1" style=" margin: 10px 0; border: 1px solid #000; border-collapse: collapse;">
+                    	<tr>
+                    	  <td colspan="2" bgcolor="#efefef">
+                          <div align="center">
+                          สรุปข้อมูลจากไฟล์โรงเรียนเอกชน
+                          </div>
+                          </td>
+                   	  </tr>
+                    	<tr>
+                       	  <td bgcolor="#efefef">
+                            จำนวนโรงเรียนเอกชนทั้งหมด(รวมสาขา)ที่พบใน file
+                            </td>
+                            <td>
+                            <div align="right">
+                            <?php
+							
+								echo formatEmployee($temp_count);
+							
+							?> แห่ง
+                             </div>
+                            </td>
+                        </tr>
+                        <tr>
+                       	  <td bgcolor="#efefef">
+                          	 จำนวนโรงเรียนเอกชนที่ข้อมูลถูกต้อง
+                            </td>
+                            <td>
+                            <div align="right">
+                            <?php
+							
+								echo formatEmployee($temp_count- $error_rows);
+							
+							?> แห่ง
+                             </div>
+                            </td>
+                        </tr>
+                         <tr>
+                       	   <td bgcolor="#efefef">
+                          	 จำนวนโรงเรียนเอกชนที่ข้อมูลไม่ถูกต้อง
+                            </td>
+                            <td>
+                            <div align="right">
+                             <font color="red">
+                            <?php 
+							 
+							 echo formatEmployee($error_rows);
+						   
+							
+							?>
+                             </font>
+                             แห่ง
+                             
+                             
+                             <?php if($error_rows){?>
+                                 <br />
+                                 <a href="import_school_invalid_list.php" target="_blank" style="font-weight: normal;">
+                                    คลิกที่นี่เพื่อดูตัวอย่างข้อมูลที่ไม่ถูกต้อง
+                                 </a>
+                             <?php }?>
+                             
+                             </div>
+                            </td>
+                        </tr>
+                        <tr>
+                           <td bgcolor="fefefe">จำนวนโรงเรียนเอกชน(รวมสาขา)ที่เป็นหน่วยงานภาครัฐ<br />
+                           และจะไม่ถูกนำเข้าระบบ</td>
+                           <td><div align="right">
+                             <?php
+						   
+						   
+						   $is_in_case = getFirstItem("select count(*) from company_temp_school where is_government = 1");
+						   echo formatEmployee( $is_in_case);
+						   
+						   ?>
+                           แห่ง </div></td>
+                      </tr>
+                        <tr>
+                       	  <td bgcolor="fefefe">
+                            จำนวนโรงเรียนเอกชน(รวมสาขา)<br />                            ที่เข้าข่ายต้องปฏิบัติตามกฎหมาย</td>
+                            <td>
+                            <div align="right">
+                           
+                           <?php
+						   
+						   
+						   $is_in_case = getFirstItem("select count(*) from company_temp_school where is_in_case = 1");
+						   echo formatEmployee( $is_in_case);
+						   
+						   ?> 
+                           
+                           แห่ง
+                          
+                             </div>
+                            </td>
+                        </tr>
+                        <tr>
+                          <td bgcolor="#fefefe">จำนวนโรงเรียนเอกชน(รวมสาขา)<br />
+ที่เข้าข่ายต้องปฏิบัติตามกฎหมาย <u>แต่มีการปฏิบัติตามกฎหมายแล้ว</u> และจะไม่ถูกนำเข้าระบบ
+</td>
+                          <td><div align="right">
+                            <?php
+						   
+						   $has_lawfulness = getFirstItem("select count(*) from company_temp_school where is_in_case = 1 and has_lawfulness = 1");
+						   echo formatEmployee($has_lawfulness);
+						   
+						   ?>
+                          แห่ง 
+                          
+                          
+                          <?php if($has_lawfulness){?>
+                               
+                               <br />
+                               <a href="import_school_list.php?mode=has_lawfulness" target="_blank">
+                               แสดงรายชื่อ
+                               </a>
+                               
+                          <?php }?>
+                          
+                          
+                          
+                          </div></td>
+                        </tr>
+                        
+                        
+                         <tr>
+                       	   <td bgcolor="#fefefe">
+                            จำนวนโรงเรียนเอกชน(รวมสาขา)<br />
+                            ที่เข้าข่ายต้องปฏิบัติตามกฎหมาย มีสำนักงานใหญ่ ยังไม่มีการปฏิบัติตามกฎหมาย <br /><font color="green">เป็นโรงเรียนใหม่ที่ไม่เคยมีในระบบ</font> และจะถูกนำเข้าระบบ
+                            </td>
+                            <td>
+                            <div align="right">
+                             <?php
+						   
+						   
+						   	   $the_count = getFirstItem("select count(*) from company_temp_school where is_in_case = 1 and no_main_branch = 0 and is_old_org = 0 and has_lawfulness = 0");
+							   
+							   echo formatEmployee($the_count);
+							   
+							   ?> แห่ง
+                               
+                               <?php if($the_count){?>
+                               
+                                   <br />
+                                   <a href="import_school_list.php?mode=the_new" target="_blank">
+                                   แสดงรายชื่อ
+                                   </a>
+                                   
+                              <?php }?>
+                               
+                            </div>
+                            </td>
+                        </tr>
+                        
+                         <tr>
+                       	   <td bgcolor="#fefefe">
+                            จำนวนโรงเรียนเอกชน(รวมสาขา)<br />
+                            ที่เข้าข่ายต้องปฏิบัติตามกฎหมาย มีสำนักงานใหญ่ ยังไม่มีการปฏิบัติตามกฎหมาย <br /><font color="red">เป็นโรงเรียนที่เคยมีในระบบ</font> และจะถูกนำเข้าระบบ
+                            </td>
+                            <td>
+                            <div align="right">
+                             <?php
+						   
+						   
+						   	   $the_count = getFirstItem("select count(*) from company_temp_school where is_in_case = 1 and no_main_branch = 0 and is_old_org > 0 and has_lawfulness = 0");
+							   echo formatEmployee($the_count);
+							   
+							   ?> แห่ง
+                               
+                               <?php if($the_count){?>
+                               
+                               <br />
+                               <a href="import_school_list.php?mode=existed" target="_blank">
+                               แสดงรายชื่อ
+                               </a>
+                               
+                               <?php }?>
+                               
+                            </div>
+                            </td>
+                        </tr>
+                        
+                         <tr>
+                       	  <td bgcolor="#fefefe">จำนวนโรงเรียนเอกชน(รวมสาขา)<br />
+                   	       ที่เข้าข่ายต้องปฏิบัติตามกฎหมาย ไม่มีสำนักงานใหญ่ ยังไม่มีการปฏิบัติตามกฎหมาย <br /><font color="green">เป็นโรงเรียนใหม่ที่ไม่เคยมีในระบบ</font>  และจะถูกนำเข้าระบบ </td>
+                            <td>
+                            <div align="right">
+                           <?php
+						   
+						   $the_count = getFirstItem("select count(*) from company_temp_school where is_in_case = 1 and no_main_branch = 1 and is_old_org = 0 and has_lawfulness = 0");
+						   echo formatEmployee($the_count);
+						   
+						   ?> แห่ง
+                           
+                           
+                           		<?php if($the_count){?>
+	                            <br />
+                               <a href="import_school_list.php?mode=the_new_no_branch" target="_blank">
+                               แสดงรายชื่อ
+                               </a>
+                           		<?php }?>
+                           
+                             </div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                       	   <td bgcolor="#fefefe">
+                            จำนวนโรงเรียนเอกชน(รวมสาขา)<br />
+                            ที่เข้าข่ายต้องปฏิบัติตามกฎหมาย ไม่มีสำนักงานใหญ่ ยังไม่มีการปฏิบัติตามกฎหมาย <br /><font color="red">เป็นโรงเรียนที่เคยมีในระบบ</font> และจะถูกนำเข้าระบบ
+                            </td>
+                            <td>
+                            <div align="right">
+                             <?php
+						   
+						   
+						   	   
+							   $the_count = getFirstItem("select count(*) from company_temp_school where is_in_case = 1 and no_main_branch = 1 and is_old_org > 0 and has_lawfulness = 0");
+							   
+							   echo formatEmployee($the_count);
+							   
+							   ?> แห่ง
+                               
+                               
+                               <?php if($the_count){?>
+	                            <br />
+                               <a href="import_school_list.php?mode=existed_no_branch" target="_blank">
+                               แสดงรายชื่อ
+                               </a>
+                           		<?php }?>
+                               
+                            </div>
+                            </td>
+                        </tr>
+                        
+                        <?php if(1==0){?>
+                         <tr>
+                       	   <td bgcolor="#efefef">
+                            จำนวนโรงเรียนเอกชน(สาขาหลักเท่านั้น)<br />ที่เข้าข่ายต้องปฏิบัติตามกฎหมาย และจะถูกนำเข้าระบบ
+                            </td>
+                            <td>
+                            <div align="right">
+                             <?php
+						   
+							   echo formatEmployee(getFirstItem("select count(*) from company_temp_school where is_in_case = 1 and BranchCode < 1"));
+							   
+							   ?> แห่ง
+                            </div>
+                            </td>
+                        </tr>
+                        <?php }?>
+                       
+                        
+                        <tr>
+                       	   <td bgcolor="#efefef">
+                            ปีงบประมาณปัจจุบัน
+                            </td>
+                            <td>
+                            <div align="right">
+                            2566
+                            </div>
+                            </td>
+                        </tr>
+                        <tr>
+                       	   <td bgcolor="#efefef">
+                            ข้อมูลการปฏิบัติตามกฎหมายที่นำเข้า<br />จะเป็นของปีงบประมาณ
+                            </td>
+                            <td>
+                            <div align="right">
+                            <strong>2567</strong>
+                            </div>
+                            </td>
+                        </tr>
+                    </table>
+                   
+                   
+                   <strong>
+                   
+                   คลิกที่นี่เพื่อเริ่มทำการนำข้อมูลโรงเรียนเอกชน และการปฏิบัติตามกฎหมายเข้าระบบ
+                   
+                   
+                   
+                   <br />
+                   หลังจากนำข้อมูลเข้าระบบแล้ว จะไม่สามารถแก้ไขข้อมูลที่นำเข้าไปแล้วได้
+                   
+                   </strong>
+                    
+                    
+                    <?php if($error_rows){?>
+                    
+                    	<br />
+                    	<font color="#FF0000">ไม่อนุญาตให้นำข้อมูลเข้าระบบ เนื่องจากยังมีข้อมูลที่ไม่ถูกต้อง กรุณาลบไฟล์นี้ และ upload file ในข้อ (1) อีกครั้ง</font>
+                        <br>
+                    	<input  name="upload_file" type="button" disabled="disabled" value="นำข้อมูลเข้าระบบ"/> 
+                    <?php }else{?>
+                    
+                    	
+                         <div id="ajax_step_3">
+                         
+                         </div>
+                         <script>
+                         $( "#ajax_step_3" ).load( "ajax_upload_school_file.php?step=3" );
+                         </script>
+                    	
+                    	
+                    <?php }?>
+                    
+                    
+                    
+                    <hr />
+                    
+                    <?php } //ends if $temp_count?>
+                    
+                    
+                    
+                    
+                    
+                    <?php if($_GET[org_created]){?>
+                    <div align="center" style="background-color:#E2FFDD; padding: 10px;">
+                    	นำเข้าข้อมูลโรงเรียนเอกชนเรียบร้อยแล้ว <a href="import_org_full_log.php" target="_blank">คลิกที่นี่</a> เพื่อดู log การทำงานทั้งหมด
+                    </div>
+                    <?php }?>
+                    
+                    
+                </td>
+			</tr>
+             
+             <tr>
+                <td align="right" colspan="2">
+                    <?php include "bottom_menu.php";?>
+                </td>
+            </tr>  
+            
+		</table>                            
+       
+        </td>
+    </tr>
+    
+</table>    
+
+</div><!--end page cell-->
+</td>
+</tr>
+</table>
+
+
+</body>
+</html>

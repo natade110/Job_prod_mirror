@@ -1,0 +1,49 @@
+<?php
+
+	if($this_date_time != "" && $this_date_time != "0000-00-00"){
+	   $this_selected_year = date("Y", strtotime($this_date_time));
+	   $this_selected_month = date("m", strtotime($this_date_time));
+	   $this_selected_day = date("d", strtotime($this_date_time));
+	}else{
+	   $this_selected_year = date("Y");
+	   $this_selected_month = date("m");
+	   $this_selected_day = 0;
+	}
+
+?>
+                                                <select name="<?php echo $selector_name;?>_month" size="1" class="inputf" id="<?php echo $selector_name;?>_month" style="width:auto;" >
+                                                <option selected value="00">...</option>
+                                                <option value="01" <?php if($this_selected_month=="01"){echo "selected='selected'";}?>><?php echo "มกราคม"?></option>
+                                                <option value="02" <?php if($this_selected_month=="02"){echo "selected='selected'";}?>><?php echo "กุมภาพันธ์"?></option>
+                                                <option value="03" <?php if($this_selected_month=="03"){echo "selected='selected'";}?>><?php echo "มีนาคม"?></option>
+                                                <option value="04" <?php if($this_selected_month=="04"){echo "selected='selected'";}?>><?php echo "เมษายน"?></option>
+                                                <option value="05" <?php if($this_selected_month=="05"){echo "selected='selected'";}?>><?php echo "พฤษภาคม"?></option>
+                                                <option value="06" <?php if($this_selected_month=="06"){echo "selected='selected'";}?>><?php echo "มิถุนายน"?></option>
+                                                <option value="07" <?php if($this_selected_month=="07"){echo "selected='selected'";}?>><?php echo "กรกฎาคม"?></option>
+                                                <option value="08" <?php if($this_selected_month=="08"){echo "selected='selected'";}?>><?php echo "สิงหาคม"?></option>
+                                                <option value="09" <?php if($this_selected_month=="09"){echo "selected='selected'";}?>><?php echo "กันยายน"?></option>
+                                                <option value="10" <?php if($this_selected_month=="10"){echo "selected='selected'";}?>><?php echo "ตุลาคม"?></option>
+                                                <option value="11" <?php if($this_selected_month=="11"){echo "selected='selected'";}?>><?php echo "พฤศจิกายน"?></option>
+                                                <option value="12" <?php if($this_selected_month=="12"){echo "selected='selected'";}?>><?php echo "ธันวาคม"?></option>
+                                              </select>
+                                              <select name="<?php echo $selector_name;?>_year" size="1" class="inputf" id="<?php echo $selector_name;?>_year" style="width:auto;" >
+                                                <option selected value="0000">...</option>
+                                                <?php 
+                                                
+                                               if(date("m") >= 9){
+													$this_date_selected_year = date("Y")+1; //new year at month 9
+												}else{
+													$this_date_selected_year = date("Y");
+												}
+                                                $end_year = 2007;
+                                                
+                                                for($i=$this_date_selected_year; $i >= $end_year; $i--){
+                                                    echo "<option value=\"".("$i") ."\"";
+                                                    if($this_selected_year == $i){
+                                                        echo "selected=\"selected\"";
+                                                    }
+                                                    echo ">". ($i + 543)."</option>";
+                                                }
+                                                
+                                                ?>
+                                              </select>

@@ -1,0 +1,1 @@
+<iframe width="500px" height="300px" scrolling="no" frameborder="no" src="http://www.google.com/fusiontables/embedviz?gco_region=TH&gco_dataMode=regions&gco_chartArea=%7B%22top%22%3A%2230%22%7D&containerId=gviz_canvas&q=select+gvizregion(col12)%2C+col9%2C+col12+from+1178631++skip+0+limit+1&viz=GVIZ&t=MAP&width=500&height=300"></iframe>
